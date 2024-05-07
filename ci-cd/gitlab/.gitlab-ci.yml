@@ -1,0 +1,78 @@
+image: maven:3-eclipse-temurin-21-alpine
+
+variables:
+  CI_DEBUG_SERVICES: "true"
+  SPRING_PROFILES_ACTIVE: gitlab
+  # --batch-mode -> runs in non-interactive (batch) mode (disables output color)
+  # Enables using of Nexus as a mirror to speed up artifact downloading when Nexus is installed on-premise
+  MAVEN_CLI_OPTS: "--settings $CI_PROJECT_DIR/ci-cd/.m2/settings.xml --batch-mode"
+  # Speeds up the build by creating a local repository and reusing the one created by the previous build
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/ci-cd/.m2/repository"
+
+stages:
+  - test
+  - distribute-to-remote-nexus
+
+test-web-server-spring-boot-starter:
+  stage: test
+  script:
+    - mvn $MAVEN_CLI_OPTS -pl .,web-server-spring-boot-starter test
+  only:
+    changes:
+      - web-server-spring-boot-starter/**/!(README.md|CHANGELOG.md)
+      - .gitlab-ci.yml
+      - pom.xml
+    refs:
+      - merge_requests
+  artifacts:
+    paths:
+      - 'ci-cd/.m2/repository/*'
+    expire_in: 1 day
+
+distribute-web-server-spring-boot-starter-remote-nexus:
+  stage: distribute-to-remote-nexus
+  script:
+    - mvn $MAVEN_CLI_OPTS -pl .,web-server-spring-boot-starter deploy
+  only:
+    changes:
+      - web-server-spring-boot-starter/**/!(README.md|CHANGELOG.md)
+      - .gitlab-ci.yml
+      - pom.xml
+    refs:
+      - main
+  artifacts:
+    paths:
+      - 'ci-cd/.m2/repository/*'
+    expire_in: 1 day
+
+test-data-conversion-spring-boot-starter:
+  stage: test
+  script:
+    - mvn $MAVEN_CLI_OPTS -pl .,data-conversion-spring-boot-starter test
+  only:
+    changes:
+      - data-conversion-spring-boot-starter/**/!(README.md|CHANGELOG.md)
+      - .gitlab-ci.yml
+      - pom.xml
+    refs:
+      - merge_requests
+  artifacts:
+    paths:
+      - 'ci-cd/.m2/repository/*'
+    expire_in: 2 days
+
+distribute-data-conversion-spring-boot-starter-remote-nexus:
+  stage: distribute-to-remote-nexus
+  script:
+    - mvn $MAVEN_CLI_OPTS -pl .,data-conversion-spring-boot-starter deploy
+  only:
+    changes:
+      - data-conversion-spring-boot-starter/**/*
+      - .gitlab-ci.yml
+      - pom.xml
+    refs:
+      - main
+  artifacts:
+    paths:
+      - 'ci-cd/.m2/repository/*'
+    expire_in: 2 days
