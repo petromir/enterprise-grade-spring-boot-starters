@@ -23,7 +23,6 @@ class TestController {
 		return id;
 	}
 
-
 	@PostMapping("/constraint-violation")
     void constraintViolation(@RequestBody @Valid final TestRequestModel testRequestModel) {
 	    // This method throw ConstraintViolationException

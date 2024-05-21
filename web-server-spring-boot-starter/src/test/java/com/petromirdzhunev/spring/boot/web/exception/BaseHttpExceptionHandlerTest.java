@@ -39,9 +39,9 @@ class BaseHttpExceptionHandlerTest {
                                "type":"about:blank",
                                "title":"Bad Request",
                                "status":400,
-                               "instance":"/test/method-argument-not-valid",
+                               "instance":"/test/method-argument-not-valid/0",
                                "errors": [
-                                 "'TestController.methodArgumentNotValid.param' must not be null"
+                                 "'TestController.methodArgumentNotValid.id' must be greater than or equal to 1"
                                ]
 				           }
 				           """, false))

@@ -13,7 +13,7 @@
     </parent>
 
     <groupId>com.petromirdzhunev</groupId>
-    <artifactId>enterprise-grade-spring-boot-starters</artifactId>
+    <artifactId>spring-boot-enterprise-starters</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <description>Spring Boot starters supporting Lego-based architecture</description>
 

@@ -1,7 +1,6 @@
-# Enterprise-grade Spring Boot starters
+# Spring Boot enterprise starters
 
-Each starter of this project focuses on one common (sometimes grouped) problem in Enterprise Java 
-development with Spring Boot.
+A set of crafted Spring Boot starters focusing on one common (sometimes grouped) problem in Enterprise Java development.
 
 ## Prerequisites
 1. [Install SDKMAN](https://sdkman.io/install)
