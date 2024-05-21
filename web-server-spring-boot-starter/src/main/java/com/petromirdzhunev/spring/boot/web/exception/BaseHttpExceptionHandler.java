@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
-public class GenericHttpExceptionHandler extends ResponseEntityExceptionHandler {
+public class BaseHttpExceptionHandler extends ResponseEntityExceptionHandler {
 
 	private static final String ERRORS = "errors";
 	private static final String TIMESTAMP = "timestamp";

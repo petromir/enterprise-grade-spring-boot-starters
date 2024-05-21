@@ -2,10 +2,14 @@ package com.petromirdzhunev.spring.boot.web.fixtures;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
@@ -13,13 +17,15 @@ import jakarta.validation.constraints.NotNull;
 @Validated
 class TestController {
 
-    @GetMapping("/method-argument-not-valid")
-    void methodArgumentNotValid(@NotNull final String param) {
-        // This method throw MethodArgumentNotValidException
-    }
+	@GetMapping("/method-argument-not-valid/{id}")
+	Long methodArgumentNotValid(@PathVariable @Min(1) final Long id) {
+		// This method throw MethodArgumentNotValidException
+		return id;
+	}
 
-    @GetMapping("/constraint-violation")
-    void constraintViolation(@Valid final TestRequestModel testRequestModel) {
+
+	@PostMapping("/constraint-violation")
+    void constraintViolation(@RequestBody @Valid final TestRequestModel testRequestModel) {
 	    // This method throw ConstraintViolationException
     }
 
