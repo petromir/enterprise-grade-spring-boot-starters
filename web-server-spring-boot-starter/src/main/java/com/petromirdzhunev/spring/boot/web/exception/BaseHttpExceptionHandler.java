@@ -79,6 +79,23 @@ public class BaseHttpExceptionHandler extends ResponseEntityExceptionHandler {
 		return problemDetail;
     }
 
+	protected ProblemDetail handleCustomException(final Exception exception, final HttpStatus httpStatus) {
+		log.error(httpStatus.toString(), exception);
+		ProblemDetail problemDetail =
+				ProblemDetail.forStatusAndDetail(httpStatus, exception.getMessage());
+		problemDetail.setProperty(TIMESTAMP, truncatedIsoDateTime());
+
+		return problemDetail;
+	}
+
+	public ProblemDetail handleCustomException(final Exception exception, final HttpStatus httpStatus,
+			List<String> errors) {
+		ProblemDetail problemDetail = handleCustomException(exception, httpStatus);
+		problemDetail.setProperty(ERRORS, errors);
+
+		return problemDetail;
+	}
+
 	private List<String> getExceptionValidationErrors(final MethodArgumentNotValidException exception) {
 		return exception.getBindingResult()
 		                .getAllErrors().stream()

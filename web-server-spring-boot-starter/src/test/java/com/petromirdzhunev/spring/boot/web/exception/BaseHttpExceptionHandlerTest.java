@@ -65,7 +65,7 @@ class BaseHttpExceptionHandlerTest {
                                "status":400,
                                "instance":"/test/constraint-violation",
                                "errors": [
-                                 "'testRequestModel.param' must not be null"
+                					"'testRequestModel.param' must not be null"
                                ]
 				           }
 				           """, false))
@@ -122,6 +122,46 @@ class BaseHttpExceptionHandlerTest {
 				       		"status":500,
 							"detail":"Unknown exception",
 				       		"instance":"/test/unknown-exception"
+				       }
+				       """, false))
+		       .andExpect(jsonPath("$.timestamp").exists())
+		       .andExpect(jsonPath("$.timestamp", matchesPattern(TIMESTAMP_PATTERN)));
+	}
+
+	@Test
+	void handleTestException() throws Exception {
+		mockMvc.perform(get("/test/test-exception"))
+		       .andExpect(status().isInternalServerError())
+		       .andExpect(content().contentType(APPLICATION_PROBLEM_CONTENT_TYPE))
+		       .andExpect(content().json("""
+				       {
+				       		"type":"about:blank",
+				       		"title":"Internal Server Error",
+				       		"status":500,
+							"detail":"Test exception",
+				       		"instance":"/test/test-exception"
+				       }
+				       """, false))
+		       .andExpect(jsonPath("$.timestamp").exists())
+		       .andExpect(jsonPath("$.timestamp", matchesPattern(TIMESTAMP_PATTERN)));
+	}
+
+	@Test
+	void handleTestExceptionWithErrors() throws Exception {
+		mockMvc.perform(get("/test/test-exception-with-errors"))
+		       .andExpect(status().isInternalServerError())
+		       .andExpect(content().contentType(APPLICATION_PROBLEM_CONTENT_TYPE))
+		       .andExpect(content().json("""
+				       {
+				       		"type":"about:blank",
+				       		"title":"Internal Server Error",
+				       		"status":500,
+							"detail":"Test exception with errors",
+				       		"instance":"/test/test-exception-with-errors",
+                           	"errors": [
+                    			"error message 1",
+             					"error message 2"
+                          	]
 				       }
 				       """, false))
 		       .andExpect(jsonPath("$.timestamp").exists())

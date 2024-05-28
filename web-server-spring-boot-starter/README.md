@@ -1,13 +1,34 @@
 # web-server-spring-boot-starter
 
-This Spring Boot starter provides all the necessary components, filters, and error handling when using Spring MVC in 
-enterprise applications.
+A Spring Boot starter provides all the necessary components, filters, and exception handling when using Spring 
+MVC in enterprise applications.
 
 The project uses Java 21
 
 ## Usage
 ### Code
-No code changes are required for now.
+#### Exception handling
+By default, a base exception handler is defined to process predefined exceptions and return a response which
+adheres to [RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807) specification.
+Extending `BaseHttpExceptionHandler` class allows you to simplify the handling of your domain exception, e.g.
+
+```java
+public class EntityNotFoundException extends RuntimeException {
+
+	public EntityNotFoundException(String message) {
+		super(message);
+	}
+}
+
+@RestControllerAdvice
+public class HttpExceptionHandler extends GlobalHttpExceptionHandler {
+
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ProblemDetail handleEntityNotFoundException(final EntityNotFoundException exception) {
+		return handleCustomException(exception, HttpStatus.NOT_FOUND);
+	}
+}
+```
 
 ### Maven
 #### Import the bom
@@ -38,14 +59,14 @@ mvnd versions:set -DnewVersion=$(mvnd -B help:evaluate -Dexpression=project.vers
 (cd .. && mvnd -B -pl .,web-server-spring-boot-starter clean install)
 ```
 
-### Point to the `SNAPSHOT` version
+#### Point to the `SNAPSHOT` version
 Go to the project where `web-server-spring-boot-starter` library is used.
 Run the following command to point to the `SNAPSHOT` version:
 ```shell
-mvnd versions:use-latest-snapshots -Dincludes=com.petromirdzhunevn:web-server-spring-boot-starter -DallowMajorUpdates=true -DallowMinorUpdates=true
+mvnd versions:use-latest-snapshots -Dincludes=com.petromirdzhunev:web-server-spring-boot-starter -DallowMajorUpdates=true -DallowMinorUpdates=true
 ```
 
-### Revert to previous version
+#### Revert to previous version
 When you finish the development you can revert to the previous version by running:
 ```shell
 mvnd versions:revert -Dincludes=com.petromirdzhunev:web-server-spring-boot-starter

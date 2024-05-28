@@ -1,5 +1,7 @@
 package com.petromirdzhunev.spring.boot.web.fixtures;
 
+import java.util.List;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +43,16 @@ class TestController {
     @GetMapping("/unknown-exception")
     void unknownException() {
         throw new RuntimeException("Unknown exception");
+    }
+
+    @GetMapping("/test-exception")
+    void testException() {
+        throw new TestException("Test exception");
+    }
+
+    @GetMapping("/test-exception-with-errors")
+    void testExceptionWithErrors() {
+        throw new TestExceptionWithErrors("Test exception with errors", List.of("error message 1", "error message 2"));
     }
 
 	private record TestRequestModel(@NotNull String param) {}
