@@ -5,17 +5,25 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class TabularGroupingColumn {
+import org.springframework.util.Assert;
+
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
+public final class TabularGroupingColumn {
 	private final Map<Object, String> valuePerContext;
 
-	public TabularGroupingColumn(final Set<TabularColumn> tabularColumns, Function<Integer,
+	public TabularGroupingColumn(final Set<TabularColumn> tabularColumns, final Function<Integer,
 			String> valueSupplier) {
+		Assert.notEmpty(tabularColumns, "tabularColumns must not be empty");
+		Assert.notNull(valueSupplier, "valueSupplier must not be null");
 		this.valuePerContext = tabularColumns
 				.stream()
-				// Skip rows which grouping column values are empty, as such rows are not needed for calculation
+				// By default, skip rows which grouping column values are empty, as such rows are not needed for
+				// calculation
 				.filter(tabularColumn -> !valueSupplier.apply(tabularColumn.index()).isEmpty())
 				.collect(Collectors.toMap(TabularColumn::context,
-						tabularColumn -> valueSupplier.apply(tabularColumn.index())));
+						tabularColumn -> tabularColumn.valueTransformer().apply(valueSupplier.apply(tabularColumn.index()))));
 	}
 
 	public String contextValue(final Object context) {

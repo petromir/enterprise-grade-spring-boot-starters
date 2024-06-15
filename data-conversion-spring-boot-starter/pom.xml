@@ -16,7 +16,6 @@
     <description>Handles various data conversions like JSON, XML, CSV, Excel etc. </description>
 
     <properties>
-        <jackson-datatype-jsr310.version>2.14.2</jackson-datatype-jsr310.version>
         <itextpdf.version>5.5.13.3</itextpdf.version>
         <opencsv.version>5.9</opencsv.version>
         <fastexcel.version>0.17.0</fastexcel.version>
@@ -48,7 +47,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson-datatype-jsr310.version}</version>
         </dependency>
         <!-- PDF -->
         <dependency>
@@ -73,6 +71,20 @@
             <artifactId>fastexcel-reader</artifactId>
             <version>${fastexcel.version}</version>
         </dependency>
+        <!-- XML -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-parameter-names</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+        </dependency>
+        <!-- Misc -->
         <dependency>
             <groupId>com.github.fge</groupId>
             <artifactId>throwing-lambdas</artifactId>

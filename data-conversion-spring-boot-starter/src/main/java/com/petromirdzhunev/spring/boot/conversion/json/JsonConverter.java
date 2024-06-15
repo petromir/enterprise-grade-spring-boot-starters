@@ -15,11 +15,11 @@ import com.petromirdzhunev.spring.boot.conversion.exception.DataConversionExcept
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class JsonConverter {
+public final class JsonConverter {
 
     private final ObjectMapper objectMapper;
 
-    public <TYPE> String objectToJson(TYPE object) {
+    public <TYPE> String objectToJson(final TYPE object) {
         try {
             return objectMapper.writer().writeValueAsString(object);
         } catch (JsonProcessingException e) {
@@ -28,12 +28,12 @@ public class JsonConverter {
         }
     }
 
-    public <TYPE> TYPE jsonToObject(String json, Class<TYPE> type) {
+    public <TYPE> TYPE jsonToObject(final String json, final Class<TYPE> type) {
         try {
             return objectMapper.readValue(json, type);
         } catch (JsonProcessingException e) {
-            throw new DataConversionException("Failed to convert JSON to Object [json=%s, objectType=%s]".formatted(json,
-		            type.getSimpleName()), e);
+            throw new DataConversionException("Failed to convert JSON to Object [json=%s, objectType=%s]"
+		            .formatted(json, type.getSimpleName()), e);
         }
     }
 
@@ -46,7 +46,8 @@ public class JsonConverter {
 		}
 	}
 
-    public <KEY, VALUE> Map<KEY, VALUE> jsonToMap(final String json, Class<KEY> keyType, Class<VALUE> valueType) {
+    public <KEY, VALUE> Map<KEY, VALUE> jsonToMap(final String json, final Class<KEY> keyType,
+		    final Class<VALUE> valueType) {
         final MapLikeType mapType = TypeFactory.defaultInstance()
                 .constructMapLikeType(Map.class, keyType, valueType);
         try {
@@ -57,7 +58,7 @@ public class JsonConverter {
         }
     }
 
-    public <TYPE> List<TYPE> jsonToList(final String json, Class<TYPE> listElementType) {
+    public <TYPE> List<TYPE> jsonToList(final String json, final Class<TYPE> listElementType) {
 
         final CollectionLikeType listType = TypeFactory.defaultInstance()
                 .constructCollectionLikeType(List.class, listElementType);
@@ -69,7 +70,7 @@ public class JsonConverter {
         }
     }
 
-    public <TYPE> List<TYPE> jsonToList(final String json, TypeReference<TYPE> typeReference) {
+    public <TYPE> List<TYPE> jsonToList(final String json, final TypeReference<TYPE> typeReference) {
 
         final CollectionLikeType listType = TypeFactory.defaultInstance()
                 .constructCollectionLikeType(List.class, TypeFactory.defaultInstance()
@@ -82,7 +83,7 @@ public class JsonConverter {
         }
     }
 
-    public <TYPE, VALUE> TYPE mapToObject(Map<String, VALUE> map, Class<TYPE> objectType) {
+    public <TYPE, VALUE> TYPE mapToObject(final Map<String, VALUE> map, final Class<TYPE> objectType) {
         try {
             return objectMapper.convertValue(map, objectType);
         } catch (Exception e) {
@@ -119,7 +120,7 @@ public class JsonConverter {
 		}
 	}
 
-    public ObjectMapper rawObjectMapper() {
+    public ObjectMapper delegateMapper() {
         return objectMapper;
     }
 }

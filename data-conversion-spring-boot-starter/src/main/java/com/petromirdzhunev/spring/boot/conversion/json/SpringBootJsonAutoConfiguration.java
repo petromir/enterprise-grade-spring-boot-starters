@@ -10,10 +10,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  * Autoconfiguration for exposing {@link JsonConverter}.
  */
 @AutoConfiguration
-public class SpringBootJsonAutoConfiguration {
+class SpringBootJsonAutoConfiguration {
 
     @Bean
-    JsonConverter jsonConverter(ObjectMapper objectMapper) {
+    JsonConverter jsonConverter(final ObjectMapper objectMapper) {
         return new JsonConverter(objectMapper.copy().registerModule(new JavaTimeModule()));
     }
 }

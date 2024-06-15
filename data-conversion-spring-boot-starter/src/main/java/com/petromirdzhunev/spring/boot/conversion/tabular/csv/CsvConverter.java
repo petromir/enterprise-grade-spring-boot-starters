@@ -29,33 +29,35 @@ import com.petromirdzhunev.spring.boot.conversion.exception.DataConversionExcept
 import com.petromirdzhunev.spring.boot.conversion.tabular.TabularGroupingColumn;
 import com.petromirdzhunev.spring.boot.conversion.tabular.TabularRow;
 
-public class CsvConverter {
+public final class CsvConverter {
 
-	public <T> List<T> csvToList(Class<T> clazz, String csv) {
-		return csvToList(clazz, CsvConversionOptions.<T>builder().build(), csv);
-	}
-
-	public <T> Map<TabularGroupingColumn, List<TabularRow>> csvToMap(CsvConversionOptions<T> converterOptions,
-			String csv, CsvExtractionCoordinates csvExtractionCoordinates) {
+	public <T> Map<TabularGroupingColumn, List<TabularRow>> csvToMap(final CsvConversionOptions<T> converterOptions,
+			final String csv, final CsvExtractionCoordinates csvExtractionCoordinates) {
 		return csvToList(converterOptions, csv)
 				.stream()
-				.collect(Collectors.toMap(csvCells -> tabularGroupingColumn(csvCells, csvExtractionCoordinates),
-						csvCells -> tabularRows(csvCells, csvExtractionCoordinates)));
+				.collect(Collectors.groupingBy(csvCells -> tabularGroupingColumn(csvCells, csvExtractionCoordinates),
+						Collectors.mapping(csvCells -> tabularRow(csvCells, csvExtractionCoordinates),
+								Collectors.toList())));
 	}
 
-	public Map<TabularGroupingColumn, List<TabularRow>> csvToMap(String csv,
-			CsvExtractionCoordinates csvExtractionCoordinates) {
+	public Map<TabularGroupingColumn, List<TabularRow>> csvToMap(final String csv,
+			final CsvExtractionCoordinates csvExtractionCoordinates) {
 		return csvToList(CsvConversionOptions.builder().build(), csv)
 				.stream()
-				.collect(Collectors.toMap(csvCells -> tabularGroupingColumn(csvCells, csvExtractionCoordinates),
-						csvCells -> tabularRows(csvCells, csvExtractionCoordinates)));
+				.collect(Collectors.groupingBy(csvCells -> tabularGroupingColumn(csvCells, csvExtractionCoordinates),
+						Collectors.mapping(csvCells -> tabularRow(csvCells, csvExtractionCoordinates),
+								Collectors.toList())));
 	}
 
-	public List<String[]> csvToList(String csv) {
+	public List<String[]> csvToList(final String csv) {
 		return csvToList(CsvConversionOptions.builder().build(), csv);
 	}
 
-	public <T> List<String[]> csvToList(CsvConversionOptions<T> converterOptions, String csv) {
+	public <T> List<T> csvToList(final Class<T> clazz, final String csv) {
+		return csvToList(clazz, CsvConversionOptions.<T>builder().build(), csv);
+	}
+
+	public <T> List<String[]> csvToList(final CsvConversionOptions<T> converterOptions, final String csv) {
 		try (CSVReader csvReader = delegateCsvReader(converterOptions.getRead(), csv)) {
 			List<String[]> csvRows = csvReader.readAll();
 			if (!csvRows.isEmpty()) {
@@ -67,7 +69,8 @@ public class CsvConverter {
 		}
 	}
 
-	public <T> List<T> csvToList(Class<T> clazz, CsvConversionOptions<T> converterOptions, String csv) {
+	public <T> List<T> csvToList(final Class<T> clazz, final CsvConversionOptions<T> converterOptions,
+			final String csv) {
 		try (CSVReader csvReader = delegateCsvReader(converterOptions.getRead(), csv)) {
 			MappingStrategy<T> mappingStrategy = converterOptions.getMappingStrategy();
 			mappingStrategy.setType(clazz);
@@ -83,31 +86,22 @@ public class CsvConverter {
 		}
 	}
 
-	private CSVReader delegateCsvReader(CsvConversionOptions.Read csvReaderOptions, String csv) {
-		return new CSVReaderBuilder(new StringReader(csv))
-				.withCSVParser(new CSVParserBuilder()
-						.withSeparator(csvReaderOptions.getSeparator())
-						.withEscapeChar(csvReaderOptions.getEscapeCharacter())
-						.withQuoteChar(csvReaderOptions.getQuoteCharacter())
-						.build())
-				.build();
-	}
-
-	public <T> void collectionToCsv(Collection<T> collection, Class<T> clazz, OutputStream outputStream) {
+	public <T> void collectionToCsv(final Collection<T> collection, final Class<T> clazz,
+			final OutputStream outputStream) {
 		streamToCsv(collection.stream(), clazz, outputStream);
 	}
 
-	public <T> void collectionToCsv(Collection<T> collection, Class<T> clazz, CsvConversionOptions<T> converterOptions,
-			OutputStream outputStream) {
+	public <T> void collectionToCsv(final Collection<T> collection, final Class<T> clazz,
+			final CsvConversionOptions<T> converterOptions, final OutputStream outputStream) {
 		streamToCsv(collection.stream(), clazz, converterOptions, outputStream);
 	}
 
-	public <T> void streamToCsv(Stream<T> stream, Class<T> clazz, OutputStream outputStream) {
+	public <T> void streamToCsv(final Stream<T> stream, final Class<T> clazz, final OutputStream outputStream) {
 		streamToCsv(stream, clazz, CsvConversionOptions.<T>builder().build(), outputStream);
 	}
 
-	public <T> void streamToCsv(Stream<T> stream, Class<T> clazz, CsvConversionOptions<T> converterOptions,
-			OutputStream outputStream) {
+	public <T> void streamToCsv(final Stream<T> stream, final Class<T> clazz,
+			final CsvConversionOptions<T> converterOptions, final OutputStream outputStream) {
 		try (OutputStreamWriter streamWriter = new OutputStreamWriter(outputStream);
 		     ICSVWriter icsvWriter = delegateCsvWriter(streamWriter, converterOptions.getWrite())) {
 
@@ -117,16 +111,17 @@ public class CsvConverter {
 		}
 	}
 
-	// todo: create a mapping strategy that could include or not include the header while appending to the file,
+	// FIXME: create a mapping strategy that could include or not include the header while appending to the file,
 	//  as well as account for case-sensitive column names
-	public <T> void streamToCsv(Stream<T> stream, Class<T> clazz, CsvConversionOptions<T> converterOptions,
-			Path filePath) {
+	public <T> void streamToCsv(final Stream<T> stream, final Class<T> clazz,
+			final CsvConversionOptions<T> converterOptions, final Path filePath) {
 		streamToCsv(stream, clazz, converterOptions, filePath, false);
 	}
 
-	public <T> void streamToCsv(Stream<T> stream, Class<T> clazz, CsvConversionOptions<T> converterOptions,
-			Path filePath, boolean shouldAppend) {
-		try (OutputStreamWriter streamWriter = new OutputStreamWriter(new FileOutputStream(filePath.toFile(), shouldAppend));
+	public <T> void streamToCsv(final Stream<T> stream, final Class<T> clazz,
+			final CsvConversionOptions<T> converterOptions, final Path filePath, boolean shouldAppend) {
+		try (OutputStreamWriter streamWriter = new OutputStreamWriter(
+				new FileOutputStream(filePath.toFile(), shouldAppend));
 		     ICSVWriter icsvWriter = delegateCsvWriter(streamWriter, converterOptions.getWrite())) {
 
 			streamToCsv(stream, clazz, converterOptions, icsvWriter);
@@ -135,8 +130,8 @@ public class CsvConverter {
 		}
 	}
 
-	private <T> void streamToCsv(Stream<T> stream, Class<T> clazz, CsvConversionOptions<T> converterOptions,
-			ICSVWriter icsvWriter)
+	private <T> void streamToCsv(final Stream<T> stream, final Class<T> clazz,
+			final CsvConversionOptions<T> converterOptions, final ICSVWriter icsvWriter)
 			throws CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
 
 		MappingStrategy<T> mappingStrategy = converterOptions.getMappingStrategy();
@@ -149,8 +144,18 @@ public class CsvConverter {
 		beanToCsv.write(stream);
 	}
 
-	private ICSVWriter delegateCsvWriter(OutputStreamWriter streamWriter,
-			CsvConversionOptions.Write writeOptions) {
+	private CSVReader delegateCsvReader(final CsvConversionOptions.Read csvReaderOptions, final String csv) {
+		return new CSVReaderBuilder(new StringReader(csv))
+				.withCSVParser(new CSVParserBuilder()
+						.withSeparator(csvReaderOptions.getSeparator())
+						.withEscapeChar(csvReaderOptions.getEscapeCharacter())
+						.withQuoteChar(csvReaderOptions.getQuoteCharacter())
+						.build())
+				.build();
+	}
+
+	private ICSVWriter delegateCsvWriter(final OutputStreamWriter streamWriter,
+			final CsvConversionOptions.Write writeOptions) {
 		return new CSVWriterBuilder(streamWriter)
 				.withQuoteChar(writeOptions.getQuoteCharacter())
 				.withEscapeChar(writeOptions.getEscapeCharacter())
@@ -159,9 +164,9 @@ public class CsvConverter {
 				.build();
 	}
 
-	private List<TabularRow> tabularRows(final String[] csvCells,
+	private TabularRow tabularRow(final String[] csvCells,
 			final CsvExtractionCoordinates extractionCoordinates) {
-		return List.of(new TabularRow(extractionCoordinates.csvColumns(), index -> csvCells[index]));
+		return new TabularRow(extractionCoordinates.csvColumns(), index -> csvCells[index]);
 	}
 
 	private TabularGroupingColumn tabularGroupingColumn(final String[] csvCells,

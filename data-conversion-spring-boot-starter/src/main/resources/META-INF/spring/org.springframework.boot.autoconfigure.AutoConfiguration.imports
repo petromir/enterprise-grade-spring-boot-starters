@@ -1,4 +1,5 @@
 com.petromirdzhunev.spring.boot.conversion.tabular.csv.SpringBootCsvAutoConfiguration
+com.petromirdzhunev.spring.boot.conversion.tabular.excel.SpringBootExcelAutoConfiguration
 com.petromirdzhunev.spring.boot.conversion.json.SpringBootJsonAutoConfiguration
 com.petromirdzhunev.spring.boot.conversion.pdf.SpringBootPdfAutoConfiguration
-com.petromirdzhunev.spring.boot.conversion.tabular.excel.SpringBootExcelAutoConfiguration
+com.petromirdzhunev.spring.boot.conversion.xml.SpringBootXmlAutoConfiguration

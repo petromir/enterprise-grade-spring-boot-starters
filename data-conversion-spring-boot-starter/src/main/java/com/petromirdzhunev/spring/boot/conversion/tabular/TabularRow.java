@@ -6,15 +6,20 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class TabularRow implements Iterable<TabularCell> {
+import org.springframework.util.Assert;
+
+public final class TabularRow implements Iterable<TabularCell> {
 
 	private final List<TabularCell> tabularCells;
 
-	public TabularRow(final Set<TabularColumn> tabularColumns, Function<Integer,
+	public TabularRow(final Set<TabularColumn> tabularColumns, final Function<Integer,
 			String> valueSupplier) {
+		Assert.notEmpty(tabularColumns, "tabularColumns must not be empty");
+		Assert.notNull(valueSupplier, "valueSupplier must not be null");
 		tabularCells = tabularColumns.stream()
 		                             .map(tabularColumn -> new TabularCell(tabularColumn.context(),
-				                      valueSupplier.apply(tabularColumn.index())))
+				                             tabularColumn.valueTransformer()
+				                                          .apply(valueSupplier.apply(tabularColumn.index()))))
 		                             .toList();
 	}
 

@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
  * Autoconfiguration for exposing {@link CsvConverter}.
  */
 @AutoConfiguration
-public class SpringBootCsvAutoConfiguration {
+class SpringBootCsvAutoConfiguration {
 
     @Bean
     CsvConverter csvConverter() {

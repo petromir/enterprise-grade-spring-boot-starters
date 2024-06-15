@@ -18,7 +18,7 @@ import com.petromirdzhunev.spring.boot.conversion.exception.DataConversionExcept
 import com.petromirdzhunev.spring.boot.conversion.tabular.TabularGroupingColumn;
 import com.petromirdzhunev.spring.boot.conversion.tabular.TabularRow;
 
-public class ExcelConverter {
+public final class ExcelConverter {
 
 	public Map<TabularGroupingColumn, List<TabularRow>> excelToMap(final byte[] content,
 			final ExcelExtractionCoordinates extractionCoordinates) {
@@ -28,8 +28,9 @@ public class ExcelConverter {
 					         sheet.openStream()
 					              .filter(row -> row.getRowNum() >= extractionCoordinates.startRow()
 							              && row.getRowNum() <= extractionCoordinates.endRow())
-					              .collect(Collectors.toMap(row -> tabularGroupingColumn(row, extractionCoordinates),
-									              row -> rows(row, extractionCoordinates)))))
+					              .collect(Collectors.groupingBy(row -> tabularGroupingColumn(row, extractionCoordinates),
+							              Collectors.mapping(row -> rows(row, extractionCoordinates),
+									              Collectors.toList())))))
 			         .orElseThrow(() -> new DataConversionException(
 					         "Failed to extract content from Excel [sheet=%s]".formatted(
 							         extractionCoordinates.sheetName())));
@@ -58,11 +59,12 @@ public class ExcelConverter {
 		return baos.toByteArray();
 	}
 
-	private List<TabularRow> rows(final Row row, final ExcelExtractionCoordinates extractionCoordinates) {
-		return List.of(new TabularRow(extractionCoordinates.excelColumns(), row::getCellText));
+	private TabularRow rows(final Row row, final ExcelExtractionCoordinates extractionCoordinates) {
+		return new TabularRow(extractionCoordinates.excelColumns(), row::getCellText);
 	}
 
-	private TabularGroupingColumn tabularGroupingColumn(final Row row, final ExcelExtractionCoordinates extractionCoordinates) {
+	private TabularGroupingColumn tabularGroupingColumn(final Row row,
+			final ExcelExtractionCoordinates extractionCoordinates) {
 		return new TabularGroupingColumn(extractionCoordinates.groupByColumns(), row::getCellText);
 	}
 }

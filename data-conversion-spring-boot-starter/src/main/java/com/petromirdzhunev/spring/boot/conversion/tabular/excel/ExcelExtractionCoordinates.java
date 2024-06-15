@@ -33,7 +33,7 @@ public record ExcelExtractionCoordinates(
 		}
 		if (startRow != mergeExcelExtractionCoordinates.startRow || endRow != mergeExcelExtractionCoordinates.endRow) {
 			throw new IllegalArgumentException(
-					("Start or end rows differ when merging [startRow=%d, mergeStartRow=%d, endRow=%d, mergeEndRow=%d]")
+					"Start or end rows differ when merging [startRow=%d, mergeStartRow=%d, endRow=%d, mergeEndRow=%d]"
 							.formatted(startRow, mergeExcelExtractionCoordinates.startRow, endRow,
 									mergeExcelExtractionCoordinates.endRow));
 		}
