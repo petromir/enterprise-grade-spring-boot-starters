@@ -1,6 +1,7 @@
 # data-conversion-spring-boot-starter
 
-Various converters for handling common data format - Json, Csv, Pdf, Excel etc.
+Data converters following unified approach when handling commonly used data format - Json, Csv, Pdf, Excel and Xml. 
+The actual conversion is performed by battle tested well-known libraries.  
 
 The project uses Java 21
 
